@@ -1,14 +1,14 @@
+
 void return_to_home() {
 
   if (flight_mode == 4) {
 
-//Sjekk om dronen er nærmere enn 10 meter
 //Regner ut blant annet høyden den må bevege seg til
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (return_to_home_step == 0) {
 
-//Hvis dronen er mindre enn  meter unna. Kan den bare synke
+//Hvis dronen er mindre enn x meter unna. Kan den bare synke
 /*
       if (abs(lat_gps_home - l_lat_waypoint) < 90 && abs(lon_gps_home - l_lon_waypoint) < 90){
         return_to_home_step = 4;
@@ -41,7 +41,7 @@ void return_to_home() {
 
 
 //Regner ut hvor mye den må stige.  
-//170 millibar er 20 meter. 17?
+//170 millibar er 20 meter
 //Trekk fra høyden
 //F.eks. 170 - (1000 - 1100) = 70
 
@@ -69,7 +69,7 @@ void return_to_home() {
     }
 */
 
-//stig til 20 meter over bakken
+//stig til 5 meter over bakken
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (return_to_home_step == 2) {
@@ -95,7 +95,7 @@ void return_to_home() {
       }
 
 
-//Hvis avstanden er mindre enn  meter senk farten
+//Hvis avstanden er mindre enn 17 ish meter, senk farten
 //Hvis ikke, øk farten
       
       if (abs(lat_gps_home - l_lat_waypoint) < 160 && abs(lon_gps_home - l_lon_waypoint) < 160 && return_to_home_move_factor > 0.05){
@@ -120,27 +120,7 @@ void return_to_home() {
       }
       if (lon_gps_home < l_lon_waypoint){
         l_lon_gps_float_adjust -= return_to_home_move_factor * return_to_home_lon_factor;
-      }
-        
-/*
-      if (lat_gps_home != l_lat_waypoint) {
-        if (lat_gps_home > l_lat_waypoint){
-          l_lat_gps_float_adjust += return_to_home_move_factor * return_to_home_lat_factor;
-        }
-        if (lat_gps_home < l_lat_waypoint){
-          l_lat_gps_float_adjust -= return_to_home_move_factor * return_to_home_lat_factor;
-        }
-      }
-      
-      if (lon_gps_home != l_lon_waypoint) {
-        if (lon_gps_home > l_lon_waypoint){
-          l_lon_gps_float_adjust += return_to_home_move_factor * return_to_home_lon_factor;
-        }
-        if (lon_gps_home < l_lon_waypoint){
-          l_lon_gps_float_adjust -= return_to_home_move_factor * return_to_home_lon_factor;
-        }
-      }
-*/      
+      }   
     }
 
 

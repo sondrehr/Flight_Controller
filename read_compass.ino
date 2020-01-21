@@ -29,7 +29,7 @@ void read_compass() {
   
   actual_compass_heading = (atan2(compass_y_horizontal, compass_x_horizontal)) * (180 / 3.14);
   
-  actual_compass_heading -= declination;                                 //Add the declination to the magnetic compass heading to get the geographic north.
+  actual_compass_heading -= declination;                                 //Legg til declination slik at den peke mot geografisk nord og ikke magnetisk nord
   
   if (actual_compass_heading < 0){
     actual_compass_heading += 360;         

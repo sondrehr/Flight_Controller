@@ -66,7 +66,7 @@ void calibrate_gyro() {
 
 void gyro_signal() {
   HWire.beginTransmission(0x68);                      
-  HWire.write(0x3B);                                           //Start reading @ register 43h and auto increment with every read.
+  HWire.write(0x3B);                                           
   HWire.endTransmission();                                    
   HWire.requestFrom(0x68, 14);                                 //Be om 14 bytes
   acc_x = HWire.read() << 8 | HWire.read();               

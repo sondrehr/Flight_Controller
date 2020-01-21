@@ -1,17 +1,21 @@
 
+
+//Modifiserer timer_setup() filene
+///////////////////////////////////////////////////////////////////////////////////////////
+
 void timer_setup() {
-  Timer2.attachCompare1Interrupt(handler_channel_1);                          //utfører handler_channel_1 når det blir interupted
-  TIMER2_BASE->CR1 = TIMER_CR1_CEN;
+  Timer2.attachCompare1Interrupt(handler_channel_1);                          //utfører handler_channel_1 når det blir interrupted
+  TIMER2_BASE->CR1 = TIMER_CR1_CEN;                                           
   TIMER2_BASE->CR2 = 0;
   TIMER2_BASE->SMCR = 0;
-  TIMER2_BASE->DIER = TIMER_DIER_CC1IE;                                       //Gjør det mulig å attache en interrupt      
+  TIMER2_BASE->DIER = TIMER_DIER_CC1IE;                                       //Gjør det mulig å attache en interrupt (capture compare 1 interrupt enable)     
   TIMER2_BASE->EGR = 0;
   TIMER2_BASE->CCMR1 = TIMER_CCMR1_CC1S_INPUT_TI1;                            //Koble reciever input til timeren som brukes for å finne en rising edge
   TIMER2_BASE->CCMR2 = 0;
   TIMER2_BASE->CCER = TIMER_CCER_CC1E;
 
   TIMER2_BASE->CCER &= ~TIMER_CCER_CC1P;                                      //Brukes for detektere enn stigende edge
-  TIMER2_BASE->PSC = 71;
+  TIMER2_BASE->PSC = 71;                                                      //Prescaler som skalerer hastigheten på timeren ned til 1 MHz
   TIMER2_BASE->ARR = 0xFFFF;                                                  //auto reload: Hvor lang tid timeren bruker på en runde
   TIMER2_BASE->DCR = 0;
 
@@ -30,9 +34,8 @@ void timer_setup() {
   TIMER4_BASE->CCER = TIMER_CCER_CC1E | TIMER_CCER_CC2E | TIMER_CCER_CC3E | TIMER_CCER_CC4E;
   
   TIMER4_BASE->PSC = 71;
-  TIMER4_BASE->ARR = 5000;
-  TIMER4_BASE->DCR = 0;
-  TIMER4_BASE->CCR1 = 1000;
+  TIMER4_BASE->ARR = 5000;                                              //Hvor mange mikrosekunder den skal gå (auto reload value)
+  TIMER4_BASE->DCR = 0;                                            
 
   TIMER4_BASE->CCR1 = 1000;                                             //Output er høy til timeren kommer til <- antall mikrosekunder
   TIMER4_BASE->CCR2 = 1000;                                             //4 ulike timere som blir reset av programmet og ikke ARR

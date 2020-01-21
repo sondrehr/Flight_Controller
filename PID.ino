@@ -3,7 +3,7 @@ void calculate_pid() {
 
 //roll Rx input
 /////////////////////////////////////////////////  
-                                                                                      //In the case of deviding by 3 the max roll rate is aprox 164 degrees per second ( (500-8)/3 = 164d/s ).
+                                                                                     
   pid_roll_setpoint = 0;
                                                                                         //siden signalene fra Tx varierer er det nødvendig med en liten dødsone
   if (pid_roll_setpoint_base > 1508){                                                   //setter setpoint lik 0 hvis den er innenfor dødsonen
@@ -14,13 +14,13 @@ void calculate_pid() {
   }
   
   
-  pid_roll_setpoint -= roll_level_adjust;                                          //Subtract the angle correction from the standardized receiver roll input value.
-  pid_roll_setpoint /= 3.0;                                                        //Divide the setpoint for the PID roll controller by 3 to get angles in degrees.
+  pid_roll_setpoint -= roll_level_adjust;                                          //Bruker en enkel P-regulator for å trekke fra vinkelen ganger en konstant Kp slik at dronen holder seg stabil selv om den ikk får noe input
+  pid_roll_setpoint /= 3.0;                                                        //(500-8)/3 = 164d/s 
  
 
 //pitch Rx input
 ////////////////////////////////////////////////
-                                                                                        //In the case of deviding by 3 the max pitch rate is aprox 164 degrees per second ( (500-8)/3 = 164d/s ).
+                                                                                       
   pid_pitch_setpoint = 0;
                                                                                         //siden signalene fra Tx varierer er det nødvendig med en liten dødsone
   if (pid_pitch_setpoint_base > 1508){                                                  //setter setpoint lik 0 hvis den er innenfor dødsonen
@@ -31,8 +31,8 @@ void calculate_pid() {
   }
 
 
-  pid_pitch_setpoint -= pitch_level_adjust;                                        //Subtract the angle correction from the standardized receiver pitch input value.
-  pid_pitch_setpoint /= 3.0;                                                       //Divide the setpoint for the PID pitch controller by 3 to get angles in degrees.
+  pid_pitch_setpoint -= pitch_level_adjust;                                        //Bruker en enkel P-regulator for å trekke fra vinkelen ganger en konstant Kp slik at dronen holder seg stabil selv om den ikk får noe input
+  pid_pitch_setpoint /= 3.0;                                                       //(500-8)/3 = 164d/s 
 
 
 //Yaw Rx input
@@ -84,20 +84,6 @@ void calculate_pid() {
   
 //Pitch calculations
 /////////////////////////////////////////////////////
-/*
-  pid_error_temp = pid_pitch_setpoint - total_angle_pitch;
-
-  
-
-  pid_output_pitch = (pid_p_gain_pitch * pid_error_temp) + (pid_i_gain_pitch * pid_i_mem_pitch_angle) + (pid_d_gain_pitch * (pid_error_temp - pid_pitch_d_error_angle));
-
-  Serial.print("\t\t");
-  Serial.print(pid_output_pitch);
-
-  pid_output_pitch *= 0.05;
-
-
-  pid_pitch_d_error_angle = pid_error_temp;*/
 
   pid_error_temp = pid_pitch_setpoint - gyro_pitch_input;
   

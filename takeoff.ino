@@ -2,7 +2,7 @@
 void start_stop_takeoff() {
   
   if (channel_3 < 1050 && channel_4 < 1050 && channel_2 > 1050 && start != 3) {      //starte modus 2
-    start = 1;                                                                       //Starte motoren: nederst til venstre
+    start = 1;                                                                       //Starte motoren: nederst til venstre med venstre stikke
   }
 
  /*                                                                                 
@@ -11,12 +11,12 @@ void start_stop_takeoff() {
   }
 */
   
-  if (start == 1 && channel_4 > 1350) {                                      //When yaw stick is back in the center position start the motors (step 2).
-    throttle = motor_idle_speed;                                                   //Set the base throttle to the motor_idle_speed variable.
-    angle_pitch = angle_pitch_acc;                                                 //Set the gyro pitch angle equal to the accelerometer pitch angle when the quadcopter is started.
-    angle_roll = angle_roll_acc;                                                   //Set the gyro roll angle equal to the accelerometer roll angle when the quadcopter is started.
-    ground_pressure = actual_pressure;                                             //Register the pressure at ground level for altitude calculations.
-    course_lock_heading = angle_yaw;                                               //Set the current compass heading as the course lock heading.
+  if (start == 1 && channel_4 > 1350) {                                            //Når yaw-sticken er tilbake i senter så starter dronen
+    throttle = motor_idle_speed;                                                   //Sett throttle lik 1200
+    angle_pitch = angle_pitch_acc;                                                 //Vinkelen til gyroen(pitch) er lik vinkelen til akselerometeret
+    angle_roll = angle_roll_acc;                                                   //Vinkelen til gyroen(roll) er lik vinkelen til akselerometeret
+    ground_pressure = actual_pressure;                                             //Registrer trykket ved bakken
+    course_lock_heading = angle_yaw;                                               //Retningen til dronen er course_lock_heading
     if (number_used_sats >= 5){
       lat_gps_home = l_lat_gps;
       lon_gps_home = l_lon_gps;
@@ -25,31 +25,31 @@ void start_stop_takeoff() {
     else{
       home_point_recorded = 0;
     }
-    start = 2;                                                                     //Set the start variable to 2 to indicate that the quadcopter is started.
+    start = 2;                                                                     //Sett start til 2 for å vise at den har startet
   }
 /*
 
   if (start == 3 && channel_4 > 1350){                                               //Hva motorene gjør i modus 3
-    angle_pitch = angle_pitch_acc;                                                 //Set the gyro pitch angle equal to the accelerometer pitch angle when the quadcopter is started.
-    angle_roll = angle_roll_acc;                                                   //Set the gyro roll angle equal to the accelerometer roll angle when the quadcopter is started.
-    ground_pressure = actual_pressure;                                           //Register the pressure at ground level for altitude calculations.
-    course_lock_heading = angle_yaw;                                             //Set the current compass heading as the course lock heading.
+    angle_pitch = angle_pitch_acc;                                                 
+    angle_roll = angle_roll_acc;                                                   
+    ground_pressure = actual_pressure;                                           
+    course_lock_heading = angle_yaw;                                             
     start = 2;
     resetPID();
   }
 */
 
   if (start == 2 && channel_3 < 1050 && channel_4 > 1950) {
-    start = 0;                                                                     //Set the start variable to 0 to disable the motors.
-    takeoff = 0;                                                          //Reset the auto take-off detection.
+    start = 0;                                                                     //Sett start til 0 for å si at den har landet
+    takeoff = 0;                                                                   //Si at dronen har landet
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////  
 
   if (takeoff == 0 && start == 2) {
 
-    if (channel_3 <= motor_idle_speed) {                                           //When the throttle is below the center stick position.                                                                       
-      resetPID();                                                                  //When the throttle is back at idle speed reset the PID controllers.
+    if (channel_3 <= motor_idle_speed) {                                           //Reset PID før man tar av                                                                       
+      resetPID();                                                                
     }
     else {
       throttle = channel_3; 

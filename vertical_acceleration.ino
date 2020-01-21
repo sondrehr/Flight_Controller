@@ -4,7 +4,7 @@
 
 void vertical_acceleration_calculations() {
   
-  if (acc_z_average_mem_location == 25) {                                                            //minnet har 25 plasser(0-24). holder telleren innefor det gyldige området
+  if (acc_z_average_mem_location == 25) {                                                //minnet har 25 plasser(0-24). holder telleren innefor det gyldige området
     acc_z_average_mem_location = 0;
   }
 

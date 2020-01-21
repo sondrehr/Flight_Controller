@@ -15,21 +15,21 @@ float low_battery_warning = 10.5;
 
 
 //PID
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float pid_p_gain_roll = 2.0;               //Gain setting for the pitch and roll P-controller (default = 1.3).
-float pid_i_gain_roll = 0.04;              //Gain setting for the pitch and roll I-controller (default = 0.04).
-float pid_d_gain_roll = 20.0;              //Gain setting for the pitch and roll D-controller (default = 18.0).
-int pid_max_roll = 400;                    //Maximum output of the PID-controller (+/-).
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+float pid_p_gain_roll = 2.0;               //Gain P-controller (default = 1.3).
+float pid_i_gain_roll = 0.04;              //Gain I-controller (default = 0.04).
+float pid_d_gain_roll = 20.0;              //Gain D-controller (default = 18.0).
+int pid_max_roll = 400;                    //Maximum output fra PID
 
-float pid_p_gain_pitch = pid_p_gain_roll;  //Gain setting for the pitch P-controller.
-float pid_i_gain_pitch = pid_i_gain_roll;  //Gain setting for the pitch I-controller.
-float pid_d_gain_pitch = pid_d_gain_roll;  //Gain setting for the pitch D-controller.
-int pid_max_pitch = pid_max_roll;          //Maximum output of the PID-controller (+/-).
+float pid_p_gain_pitch = pid_p_gain_roll;  //Gain P-controller.
+float pid_i_gain_pitch = pid_i_gain_roll;  //Gain I-controller.
+float pid_d_gain_pitch = pid_d_gain_roll;  //Gain D-controller.
+int pid_max_pitch = pid_max_roll;          //Maximum output fra PID.
 
-float pid_p_gain_yaw = 4.0;                //Gain setting for the pitch P-controller (default = 4.0).
-float pid_i_gain_yaw = 0.02;               //Gain setting for the pitch I-controller (default = 0.02).
-float pid_d_gain_yaw = 0.0;                //Gain setting for the pitch D-controller (default = 0.0).
-int pid_max_yaw = 400;                     //Maximum output of the PID-controller (+/-).
+float pid_p_gain_yaw = 4.0;                //Gain P-controller (default = 4.0).
+float pid_i_gain_yaw = 0.02;               //Gain I-controller (default = 0.02).
+float pid_d_gain_yaw = 0.0;                //Gain D-controller (default = 0.0).
+int pid_max_yaw = 400;                     //Maximum output fra PID
 
 float battery_compensation = 40.0;
 
@@ -191,10 +191,10 @@ int32_t pressure_rotating_mem[50], pressure_total_avarage;
 uint8_t pressure_rotating_mem_location;
 float pressure_rotating_mem_actual;
 
-float pid_p_gain_altitude = 1.4;           //Gain setting for the altitude P-controller (default = 1.4).
-float pid_i_gain_altitude = 0.2;           //Gain setting for the altitude I-controller (default = 0.2).
-float pid_d_gain_altitude = 0.75;          //Gain setting for the altitude D-controller (default = 0.75).
-int pid_max_altitude = 400;                //Maximum output of the PID-controller (+/-).
+float pid_p_gain_altitude = 1.4;           //Gain altitude P-controller (default = 1.4).
+float pid_i_gain_altitude = 0.2;           //Gain altitude I-controller (default = 0.2).
+float pid_d_gain_altitude = 0.75;          //Gain altitude D-controller (default = 0.75).
+int pid_max_altitude = 400;                ///Maximum output fra PID
 
 
 //read_GPS
@@ -222,8 +222,8 @@ uint8_t return_to_home_step;
 int32_t lat_gps_home, lon_gps_home;
 
 
-float gps_p_gain = 2.7;                    //Gain setting for the GPS P-controller (default = 2.7).
-float gps_d_gain = 8.0;                    //Gain setting for the GPS D-controller (default = 6.5).
+float gps_p_gain = 2.7;                    //Gain GPS P-controller (default = 2.7).
+float gps_d_gain = 8.0;                    //Gain GPS D-controller (default = 6.5).
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -235,7 +235,7 @@ void setup() {
   pinMode(PA12, OUTPUT);                                        //Rød LED
   pinMode(PC13, OUTPUT);                                        //LED brukes til GPS
   digitalWrite(PC13, HIGH);                                     //Motsatt funksjon (HØY == LAV)
-  pinMode(PB0, OUTPUT);                                         //Set PB0 as output for telemetry TX.
+  pinMode(PB0, OUTPUT);                                         //Set PB0 as output for telemetry TX
 
   green_led(LOW);
   red_led(HIGH);
@@ -246,10 +246,10 @@ void setup() {
   EEPROM.PageBase1 = 0x801F800;
   EEPROM.PageSize  = 0x400;
 
-  timer_setup();                                                //Setup the timers for the receiver inputs and ESC's output.
-  delay(50);                                                    //Give the timers some time to start.
+  timer_setup();                                                //Sett opp timerene som brukes av esc og reciever
+  delay(50);                                                    //La timerene starte opp
 
-  gps_setup();                                                  //Set the baud rate and output refreshrate of the GPS module.
+  gps_setup();                                                  //Sett opp GPS, baud rate osv...
 
 
   //Starter kommunikasjon med de ulike sensorene via I2C
@@ -434,9 +434,9 @@ void loop() {
 
   gyro_signal();                                                                   //Les data fra gyroen
 
-  read_barometer();                                                                //Read and calculate the barometer data.
+  read_barometer();                                                                //Les data fra barometeret
 
-  read_compass();                                                                  //Read and calculate the compass data.
+  read_compass();                                                                  //Les data fra kompasset
 
   if (gps_add_counter >= 0) {
     gps_add_counter --;
@@ -519,10 +519,10 @@ void loop() {
   ////////////////////////////////////////////////////////
 
   angle_pitch = (angle_pitch * 0.9996) + (angle_pitch_acc * 0.0004);
-  angle_roll = (angle_roll * 0.9996) + (angle_roll_acc * 0.0004);                  //Bruker et kompementær-filter for å kompensere for drift i gyroen
+  angle_roll = (angle_roll * 0.9996) + (angle_roll_acc * 0.0004);                  //Bruker et komplementær-filter for å kompensere for drift i gyroen
 
 
-  pitch_level_adjust = angle_pitch * 15;                                           //Bruker en enkel P kontroller for å gi et pådrag lik en kosntant ganger vinkelen
+  pitch_level_adjust = angle_pitch * 15;                                           //Bruker en enkel P kontroller for å gi et pådrag lik en konstant ganger vinkelen
   roll_level_adjust = angle_roll * 15;
 
 
@@ -642,7 +642,7 @@ void loop() {
   TIMER4_BASE->CCR4 = esc_4;
   TIMER4_BASE->CNT = 5000;                                                         //Verdien blir nullstilt av software ikke ARR
 
-  //send_telemetry_data();                                                           //Send telemetry data to the ground station.
+  //send_telemetry_data();                                                         //Send telemetri til "bakkestasjonen"
 
 
   if (micros() - loop_timer > 4050) {

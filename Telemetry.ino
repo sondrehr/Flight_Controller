@@ -1,5 +1,6 @@
 
-//The output for the serial monitor is PB0. Protocol is 1 start bit, 8 data bits, no parity, 1 stop bit.
+//Output er PB0, Protokoll: 1 start-bit, 8 data-bit, ingen paritet, 1 stop bit
+
 
 void send_telemetry_data() {
   telemetry_loop_counter++; 
@@ -40,7 +41,7 @@ void send_telemetry_data() {
     else {
       telemetry_buffer_byte = 1000;                                                         //Send høyde 0 hvis den ikke flyr
     }
-    telemetry_send_byte = telemetry_buffer_byte;                                            //Send 1. variabel
+    telemetry_send_byte = telemetry_buffer_byte;                                            //Send 1. vbyte med informasjon
   }
   if (telemetry_loop_counter == 12)telemetry_send_byte = telemetry_buffer_byte >> 8;        //Send siste byte
 
@@ -113,7 +114,7 @@ void send_telemetry_data() {
 
 
 
-  if (telemetry_loop_counter == 34)telemetry_send_byte = check_byte;                        //Send the check-byte.
+  if (telemetry_loop_counter == 34)telemetry_send_byte = check_byte;                        //Send check-byte.
 
 
 
@@ -138,14 +139,14 @@ void send_telemetry_data() {
 
     //Send byten
     
-    for (telemetry_bit_counter = 0; telemetry_bit_counter < 8; telemetry_bit_counter ++) {    //Create a loop fore every bit in the
+    for (telemetry_bit_counter = 0; telemetry_bit_counter < 8; telemetry_bit_counter ++) {    //Lag en loop med for løkke for alle bit i byten
       if (telemetry_send_byte >> telemetry_bit_counter & 0b1){
-        GPIOB_BASE->BSRR = 0b1 << 0;    //If the specific bit is set, set output PB0 to 1;
+        GPIOB_BASE->BSRR = 0b1 << 0;                                                          //Hvis biten er satt, sett PB0 to 1;
       }
       else {
-        GPIOB_BASE->BSRR = 0b1 << 16;                                                      //If the specific bit is not set, reset output PB0 to 0;
+        GPIOB_BASE->BSRR = 0b1 << 16;                                                         //Hvis ikke, reset PB0 to 0;
       }
-      delayMicroseconds(104);                                                                 //Delay 104us (1s/9600bps)
+      delayMicroseconds(104);                                                                
     }
     //Send a stop bit
     GPIOB_BASE->BSRR = 0b1 << 0;                                                              //PB0 = 1

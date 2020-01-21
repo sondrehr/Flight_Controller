@@ -29,6 +29,8 @@ void calibrate_compass() {
   }
   */
 
+  //målte verdier så jeg slipper å kalibrere kompasset hver gang det starter.
+
   compass_cal_values[0] = -724;
   compass_cal_values[1] = 463;
   compass_cal_values[2] = -682;
@@ -42,10 +44,10 @@ void calibrate_compass() {
     EEPROM.write(0x10 + j, compass_cal_values[j]);
   }
 
-  setup_compass();                                                           //Initiallize the compass and set the correct registers.
-  read_compass();                                                            //Read and calculate the compass data.
+  setup_compass();                                                           //Initialiser kompasset og set verdier
+  read_compass();                                                            //Les data fra kompasset
   
-  angle_yaw = actual_compass_heading;                                        //Set the initial compass heading.
+  angle_yaw = actual_compass_heading;                                        //Sett den initielle retningen
 
   red_led(LOW);
   
@@ -56,7 +58,7 @@ void calibrate_compass() {
     delay(50);
   }
 
-  loop_timer = micros();                                                     //Set the timer for the next loop.
+  loop_timer = micros();                                                     //Sett timeren
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
