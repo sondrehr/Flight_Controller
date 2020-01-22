@@ -23,9 +23,11 @@ void read_compass() {
     compass_x += compass_offset_x;                            
   }
   
- 
-  compass_x_horizontal = (float)compass_x * cos(angle_pitch * 0.0174533) + (float)compass_y * sin(angle_roll * 0.0174533) * sin(angle_pitch * 0.0174533) - (float)compass_z * cos(angle_roll * 0.0174533) * sin(angle_pitch * 0.0174533);
-  compass_y_horizontal = (float)compass_y * cos(angle_roll * 0.0174533) + (float)compass_z * sin(angle_roll * 0.0174533);
+
+
+ //Ferdige formler for x og y gitt fra datasheete til kompasset.
+  compass_x_horizontal = compass_x * cos(angle_pitch * 0.0174533) + compass_y * sin(angle_roll * 0.0174533) * sin(angle_pitch * 0.0174533) - compass_z * cos(angle_roll * 0.0174533) * sin(angle_pitch * 0.0174533);
+  compass_y_horizontal = compass_y * cos(angle_roll * 0.0174533) + compass_z * sin(angle_roll * 0.0174533);
   
   actual_compass_heading = (atan2(compass_y_horizontal, compass_x_horizontal)) * (180 / 3.14);
   
@@ -53,15 +55,17 @@ void setup_compass() {
  
   for (j = 0; j < 6; j ++){
     compass_cal_values[j] = EEPROM.read(0x10 + j);
-  }
+  } 
+
   
+  //Formler for å kalibrere kompasset og for å legge til offsett som oppført i databladet til kompasset
   
-  compass_scale_y = ((float)compass_cal_values[1] - compass_cal_values[0]) / (compass_cal_values[3] - compass_cal_values[2]);
-  compass_scale_z = ((float)compass_cal_values[1] - compass_cal_values[0]) / (compass_cal_values[5] - compass_cal_values[4]);
+  compass_scale_y = (compass_cal_values[1] - compass_cal_values[0]) / (compass_cal_values[3] - compass_cal_values[2]);
+  compass_scale_z = (compass_cal_values[1] - compass_cal_values[0]) / (compass_cal_values[5] - compass_cal_values[4]);
 
   compass_offset_x = (compass_cal_values[1] - compass_cal_values[0]) / 2 - compass_cal_values[1];
-  compass_offset_y = (((float)compass_cal_values[3] - compass_cal_values[2]) / 2 - compass_cal_values[3]) * compass_scale_y;
-  compass_offset_z = (((float)compass_cal_values[5] - compass_cal_values[4]) / 2 - compass_cal_values[5]) * compass_scale_z;
+  compass_offset_y = ((compass_cal_values[3] - compass_cal_values[2]) / 2 - compass_cal_values[3]) * compass_scale_y;
+  compass_offset_z = ((compass_cal_values[5] - compass_cal_values[4]) / 2 - compass_cal_values[5]) * compass_scale_z;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

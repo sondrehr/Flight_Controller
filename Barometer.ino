@@ -1,13 +1,10 @@
 
-//Oppløsning:
-
-
 
 
 void read_barometer() {
   barometer_counter ++;
 
-  //det er 3 looper her hvor en loop går hvert 12 ms
+  //det er 3 looper her hvor en total loop tar 12 ms
   //Henting av data tar 9 ms fra MS5611 så derfor passer det å hente dataen hver 3. loop
 
   if (barometer_counter == 1) {                                         
@@ -154,14 +151,13 @@ void read_barometer() {
         manual_throttle = (channel_3 - 1600) / 5;                                    //Begrens throttle så den ikke kan stige eller synke for fort
       }
 
-      //Calculate the PID output of the altitude hold.
+
+//PID
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
       pid_altitude_input = actual_pressure;                                          
       pid_error_temp = pid_altitude_input - pid_altitude_setpoint;                   //regn ut feilen mellom den fsktiske høyden og ønsket høyde
-
-
-
       
-      //The variable pid_error_gain_altitude will be used to adjust the P-gain of the PID-controller.
       
       pid_error_gain_altitude = 0;                                                   
       if (pid_error_temp > 10 || pid_error_temp < -10) {                             //Hvis absoluttverdien av feilen er større enn 10

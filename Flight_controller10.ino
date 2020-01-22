@@ -234,7 +234,7 @@ void setup() {
   pinMode(PA11, OUTPUT);                                        //Grønn LED
   pinMode(PA12, OUTPUT);                                        //Rød LED
   pinMode(PC13, OUTPUT);                                        //LED brukes til GPS
-  digitalWrite(PC13, HIGH);                                     //Motsatt funksjon (HØY == LAV)
+  digitalWrite(PC13, HIGH);                                     //Motsatt funksjon (HØY = LAV)
   pinMode(PB0, OUTPUT);                                         //Set PB0 as output for telemetry TX
 
   green_led(LOW);
@@ -566,16 +566,16 @@ void loop() {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  calculate_pid();                                                                 //Calculate the pid outputs based on the receiver inputs.
+  calculate_pid();                                                                 
 
-  start_stop_takeoff();                                                            //Starting, stopping and take-off detection
+  start_stop_takeoff();                                                            //Start, stopp og take-off detection
 
-  //The battery voltage is needed for compensation.
-  //A complementary filter is used to reduce noise.
+  //Må kompensere for fall i spenningen
+  //Et komplementærfilter brukes til å redusere støy
   //1410.1 = 112.81 / 0.08.
   battery_voltage = battery_voltage * 0.92 + ((float)analogRead(4) / 1410.1);
 
-  //Turn on the led if battery voltage is to low. Default setting is 10.5V
+  //Skru på led hvis spenningen blir for lav.
   if (battery_voltage > 6.0 && battery_voltage < low_battery_warning && error == 0) {
     error = 1;
   }

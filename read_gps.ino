@@ -8,7 +8,8 @@ void gps_setup(){
   Serial1.begin(9600);
   delay(250);
 
- 
+
+//setter variabler slik det er definert i databladet til gps-en
   uint8_t Disable_GPGSV[11] = {0xB5, 0x62, 0x06, 0x01, 0x03, 0x00, 0xF0, 0x03, 0x00, 0xFD, 0x15};
   Serial1.write(Disable_GPGSV, 11);                                                                           //Disable GPGSV meldinger som ikke er nødvendige
   delay(350); 
@@ -53,7 +54,9 @@ void read_gps() {
   //"aktiveres" når den mottar en ny linje
   
   if (new_line_found == 1) {                                                                            
-    new_line_found = 0;                                                                                 
+    new_line_found = 0; 
+
+                                                                                    
     if (incomming_message[4] == 'L' && incomming_message[5] == 'L' && incomming_message[7] == ',') {     //Hvis det ikke er noe GPS informasjon tilgjengelig
       digitalWrite(PC13, !digitalRead(PC13));                                                            //Endre LED for å vise signalstyrke
       
@@ -135,8 +138,8 @@ void read_gps() {
 
       //Regner ut det vi må legge til 9/10 looper for å øke frekvensen til en "simulert 50Hz"
 
-      lat_gps_loop_add = (float)(lat_gps_actual - lat_gps_previous) / 10.0;                              
-      lon_gps_loop_add = (float)(lon_gps_actual - lon_gps_previous) / 10.0;                             
+      lat_gps_loop_add = (lat_gps_actual - lat_gps_previous) / 10.0;                              
+      lon_gps_loop_add = (lon_gps_actual - lon_gps_previous) / 10.0;                             
 
       l_lat_gps = lat_gps_previous;                                                                     
       l_lon_gps = lon_gps_previous;
@@ -174,14 +177,14 @@ void read_gps() {
 
     lat_gps_add += lat_gps_loop_add;                                                                      //Legger til verdien som ble regnet ut over
     if (abs(lat_gps_add) >= 1) {                                                                          //Hvis verdien er større enn 1
-      l_lat_gps += (int)lat_gps_add;                                                                      //l_lat_gps kan ikke ha desimaler
-      lat_gps_add -= (int)lat_gps_add;                                                                    //Trekk fra slik at det kun er desimaltallet igjen
+      l_lat_gps += lat_gps_add;                                                                      //l_lat_gps kan ikke ha desimaler
+      lat_gps_add -= lat_gps_add;                                                                    //Trekk fra slik at det kun er desimaltallet igjen
     }
 
     lon_gps_add += lon_gps_loop_add;                                                                   
     if (abs(lon_gps_add) >= 1) {                                                                         
-      l_lon_gps += (int)lon_gps_add;                                                                      
-      lon_gps_add -= (int)lon_gps_add;                                                                    
+      l_lon_gps += lon_gps_add;                                                                      
+      lon_gps_add -= lon_gps_add;                                                                    
     }
   }
 
@@ -296,16 +299,16 @@ void read_gps() {
       //D = (float)gps_lat_total_avarage * gps_d_gain
       //Burde egt deles på 36, men kan bare gjøre gps_d_gain 36 ganger mindre
       
-      gps_pitch_adjust_north = (float)gps_lat_error * gps_p_gain + (float)gps_lat_total_avarage * gps_d_gain;  
-      gps_roll_adjust_north = (float)gps_lon_error * gps_p_gain + (float)gps_lon_total_avarage * gps_d_gain;
+      gps_pitch_adjust_north = gps_lat_error * gps_p_gain + gps_lat_total_avarage * gps_d_gain;  
+      gps_roll_adjust_north = gps_lon_error * gps_p_gain + gps_lon_total_avarage * gps_d_gain;
 
 
       
       //Må konvertere siden korreksjonen er kalkulert som hvis fronten var mot nord.
 
 
-      gps_pitch_adjust = ((float)gps_pitch_adjust_north * cos(angle_yaw * 0.017453)) + ((float)gps_roll_adjust_north * cos((angle_yaw - 90) * 0.017453));
-      gps_roll_adjust = ((float)gps_roll_adjust_north * cos(angle_yaw * 0.017453)) + ((float)gps_pitch_adjust_north * cos((angle_yaw + 90) * 0.017453));
+      gps_pitch_adjust = (gps_pitch_adjust_north * cos(angle_yaw * 0.017453)) + (gps_roll_adjust_north * cos((angle_yaw - 90) * 0.017453));
+      gps_roll_adjust = (gps_roll_adjust_north * cos(angle_yaw * 0.017453)) + (gps_pitch_adjust_north * cos((angle_yaw + 90) * 0.017453));
 
 
 

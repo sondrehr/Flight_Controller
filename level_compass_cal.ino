@@ -66,12 +66,7 @@ void calibrate_compass() {
 void calibrate_level() {
   
   level_calibration_on = 1;
-/*
-  while (channel_2 < 1100) {
-    send_telemetry_data();                                                   //Send telemetry data to the ground station.
-    delay(10);
-  }
-*/  
+ 
   red_led(HIGH);
   green_led(LOW);
 
