@@ -1,5 +1,5 @@
 
-void start_stop_takeoff() {
+void Takeoff() {
   
   if (channel_3 < 1050 && channel_4 < 1050 && channel_2 > 1050 && start != 3) {      //starte modus 2
     start = 1;                                                                       //Starte motoren: nederst til venstre med venstre stikke
@@ -55,7 +55,8 @@ void start_stop_takeoff() {
       throttle = channel_3; 
     }
     
-    if (((acc_z_average_total/ 25)*9.81/4096) > 11.3) {                            //takeoff er registrert når dronen akselererer oppover.
+    if (((acc_z_average_total/ 25)*9.81/4096) > 12) {                            //takeoff er registrert når dronen akselererer oppover. 11.2
+      //Byttes ut med Rangefinder???? 
       takeoff = 1;                                                                 //indiker at dronen har tatt av
       takeoff_throttle = throttle;
       if (throttle > 1750) {                                                               

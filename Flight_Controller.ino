@@ -45,6 +45,17 @@ float pid_yaw_setpoint, gyro_yaw_input;
 
 float roll_level_adjust, pitch_level_adjust;
 
+
+
+float pidLidarGainP = 0.3;                //Gain P-controller (default = 0.1).
+float pidLidarGainI = 0.00005;                //Gain D-controller (default = 0.0).
+float pidLidarGainD = 1.0;               //Gain I-controller (default = 0.003).
+float pidLidarP, pidLidarD, pidLidarI;
+
+float heightError, heightErrorPrev;
+float pidLidarTotal;
+
+
 //Return to home
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 float return_to_home_decrease;
@@ -63,22 +74,9 @@ float adjustable_setting_1, adjustable_setting_2, adjustable_setting_3;
 
 //Tx_and_Rx
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int32_t channel_1_start, channel_1;
-int32_t channel_2_start, channel_2;
-int32_t channel_3_start, channel_3;
-int32_t channel_4_start, channel_4;
-int32_t channel_5_start, channel_5;
-int32_t channel_6_start, channel_6;
-int32_t channel_7_start, channel_7;
-int32_t channel_8_start, channel_8;
-int32_t channel_9_start, channel_9;
-int32_t channel_10_start, channel_10;
-
+int32_t channel_1, channel_2, channel_3, channel_4, channel_5, channel_6, channel_7, channel_8, channel_9, channel_10;
 int32_t measured_time, measured_time_start;
-
 uint8_t channel_select_counter;
-
-uint16_t receiver_watchdog;
 
 
 //calibration_baro_gps
@@ -92,8 +90,11 @@ int16_t acc_roll_cal_value;
 uint8_t level_calibration_on;
 
 
-//Gyro
+//IMU
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int16_t IMU1 = 0x68;
+int16_t IMU2 = 0x69;
+
 int16_t cal_int;
 
 int32_t gyro_roll_cal, gyro_pitch_cal, gyro_yaw_cal;
@@ -102,14 +103,14 @@ int16_t acc_y, acc_x, acc_z;
 int16_t gyro_pitch, gyro_roll, gyro_yaw;
 
 
-//Start_stop_takeoff
+//Takeoff
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int16_t manual_throttle;
 int16_t throttle, takeoff_throttle;
 
 int16_t motor_idle_speed = 1100;
 
-uint8_t start;
+uint8_t start = 0;
 
 uint8_t takeoff;
 
@@ -225,14 +226,53 @@ int32_t lat_gps_home, lon_gps_home;
 float gps_p_gain = 2.7;                    //Gain GPS P-controller (default = 2.7).
 float gps_d_gain = 8.0;                    //Gain GPS D-controller (default = 6.5).
 
+
+
+//Lidar
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+// Create a Cyclic Redundancy Checks table used in the "crc8" function
+static const uint8_t crc_table[] = {
+    0x00, 0x07, 0x0e, 0x09, 0x1c, 0x1b, 0x12, 0x15, 0x38, 0x3f, 0x36, 0x31,
+    0x24, 0x23, 0x2a, 0x2d, 0x70, 0x77, 0x7e, 0x79, 0x6c, 0x6b, 0x62, 0x65,
+    0x48, 0x4f, 0x46, 0x41, 0x54, 0x53, 0x5a, 0x5d, 0xe0, 0xe7, 0xee, 0xe9,
+    0xfc, 0xfb, 0xf2, 0xf5, 0xd8, 0xdf, 0xd6, 0xd1, 0xc4, 0xc3, 0xca, 0xcd,
+    0x90, 0x97, 0x9e, 0x99, 0x8c, 0x8b, 0x82, 0x85, 0xa8, 0xaf, 0xa6, 0xa1,
+    0xb4, 0xb3, 0xba, 0xbd, 0xc7, 0xc0, 0xc9, 0xce, 0xdb, 0xdc, 0xd5, 0xd2,
+    0xff, 0xf8, 0xf1, 0xf6, 0xe3, 0xe4, 0xed, 0xea, 0xb7, 0xb0, 0xb9, 0xbe,
+    0xab, 0xac, 0xa5, 0xa2, 0x8f, 0x88, 0x81, 0x86, 0x93, 0x94, 0x9d, 0x9a,
+    0x27, 0x20, 0x29, 0x2e, 0x3b, 0x3c, 0x35, 0x32, 0x1f, 0x18, 0x11, 0x16,
+    0x03, 0x04, 0x0d, 0x0a, 0x57, 0x50, 0x59, 0x5e, 0x4b, 0x4c, 0x45, 0x42,
+    0x6f, 0x68, 0x61, 0x66, 0x73, 0x74, 0x7d, 0x7a, 0x89, 0x8e, 0x87, 0x80,
+    0x95, 0x92, 0x9b, 0x9c, 0xb1, 0xb6, 0xbf, 0xb8, 0xad, 0xaa, 0xa3, 0xa4,
+    0xf9, 0xfe, 0xf7, 0xf0, 0xe5, 0xe2, 0xeb, 0xec, 0xc1, 0xc6, 0xcf, 0xc8,
+    0xdd, 0xda, 0xd3, 0xd4, 0x69, 0x6e, 0x67, 0x60, 0x75, 0x72, 0x7b, 0x7c,
+    0x51, 0x56, 0x5f, 0x58, 0x4d, 0x4a, 0x43, 0x44, 0x19, 0x1e, 0x17, 0x10,
+    0x05, 0x02, 0x0b, 0x0c, 0x21, 0x26, 0x2f, 0x28, 0x3d, 0x3a, 0x33, 0x34,
+    0x4e, 0x49, 0x40, 0x47, 0x52, 0x55, 0x5c, 0x5b, 0x76, 0x71, 0x78, 0x7f,
+    0x6a, 0x6d, 0x64, 0x63, 0x3e, 0x39, 0x30, 0x37, 0x22, 0x25, 0x2c, 0x2b,
+    0x06, 0x01, 0x08, 0x0f, 0x1a, 0x1d, 0x14, 0x13, 0xae, 0xa9, 0xa0, 0xa7,
+    0xb2, 0xb5, 0xbc, 0xbb, 0x96, 0x91, 0x98, 0x9f, 0x8a, 0x8d, 0x84, 0x83,
+    0xde, 0xd9, 0xd0, 0xd7, 0xc2, 0xc5, 0xcc, 0xcb, 0xe6, 0xe1, 0xe8, 0xef,
+    0xfa, 0xfd, 0xf4, 0xf3
+};
+
+uint8_t buf[3];                                                                    // The variable "buf[3]" will contain the frame sent by the TeraRanger
+uint16_t heightLidar = 0, heightLidarTotal = 0, desiredDistance = 0;         // The variable "heightLidar" will contain the heightLidar value in millimeter
+uint8_t CRC = 0;                                                                   // The variable "CRC" will contain the checksum to compare at TeraRanger's one
+
+uint8_t short_mode[2] = {0x02,0x01};
+uint8_t long_mode[2] = {0x02,0x03};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void setup() {
- 
-  
   pinMode(4, INPUT_ANALOG);
   pinMode(PA11, OUTPUT);                                        //Grønn LED
   pinMode(PA12, OUTPUT);                                        //Rød LED
+  pinMode(PA15, OUTPUT);                                        //Gul LED
+  pinMode(PB3, OUTPUT);                                         //Blå LED
   pinMode(PC13, OUTPUT);                                        //LED brukes til GPS
   digitalWrite(PC13, HIGH);                                     //Motsatt funksjon (HØY = LAV)
   pinMode(PB0, OUTPUT);                                         //Set PB0 as output for telemetry TX
@@ -241,24 +281,21 @@ void setup() {
   red_led(HIGH);
 
 
-  //Minne som bevares selv om den skrus av!!!!!
+  //Minne som bevares selv om den skrus av
   EEPROM.PageBase0 = 0x801F000;
   EEPROM.PageBase1 = 0x801F800;
   EEPROM.PageSize  = 0x400;
 
   timer_setup();                                                //Sett opp timerene som brukes av esc og reciever
-  delay(50);                                                    //La timerene starte opp
+  delay(500);                                                   //La timerene og sensorene starte opp
 
-  gps_setup();                                                  //Sett opp GPS, baud rate osv...
-
-
-  //Starter kommunikasjon med de ulike sensorene via I2C
+ 
+  //Checks that all sensor connected to the I2C bus
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  //MPU6050
-
+  //MPU6050 2 stk
   HWire.begin();                                                //start I2C
-  HWire.beginTransmission(0x68);
+  HWire.beginTransmission(IMU1);
   error = HWire.endTransmission();                              //Registrer hva som blir sendt. Hvis det ikke er 0 = feil
   while (error != 0) {
     error = 1;
@@ -266,8 +303,17 @@ void setup() {
     delay(4);
   }
 
-  //Kompass
+                                         
+  HWire.beginTransmission(IMU2);
+  error = HWire.endTransmission();                      
+  while (error != 0) {
+    error = 1;
+    error_signal();
+    delay(4);
+  }
 
+
+  //HMC5883l
   HWire.beginTransmission(0x1E);
   error = HWire.endTransmission();
   while (error != 0) {
@@ -276,9 +322,7 @@ void setup() {
     delay(4);
   }
 
-
   //MS5611
-
   HWire.beginTransmission(0x77);
   error = HWire.endTransmission();
   while (error != 0) {
@@ -286,24 +330,34 @@ void setup() {
     error_signal();
     delay(4);
   }
+/*
+  //Teraranger 60m
+  HWire.beginTransmission(0x31);
+  error = HWire.endTransmission();
+  while (error != 0) {
+    error = 4;
+    error_signal();
+    delay(4);
+  }
+*/
 
-
-  //Setter opp sensorene
+  //Setup the different sensors
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //Teraranger evo
+  setupLidar();
+  readLidar();
 
 
   //HMC5883l
-  ////////////////////////////////////////////////////////
-
-  setup_compass();
-  read_compass();
-
+  setupCompass();
+  readCompass();
   angle_yaw = actual_compass_heading;                           //Sett den initielle kompass-headingen
 
-  //MPU6050
-  //////////////////////////////////////////////////////////
 
-  gyro_setup();
+  //MPU6050
+  setupIMU(IMU1);
+  setupIMU(IMU2);
 
   //5 sekunders forsinkelse
   for (i = 0; i < 1250; i++) {                                  //1250 * 4 micro = 5 s
@@ -317,39 +371,38 @@ void setup() {
 
 
   //ms5611
-  /////////////////////////////////////////////////////////
-
-  for (start = 1; start <= 6; start++) {
+  for (i = 1; i <= 6; i++) {
     HWire.beginTransmission(0x77);                              //Start kommunikasjon
-    HWire.write(0xA0 + start * 2);                              //Send addressen vi vil lese fra
+    HWire.write(0xA0 + i * 2);                              //Send addressen vi vil lese fra
     HWire.endTransmission();                                    //End "samtalen"
 
     HWire.requestFrom(0x77, 2);                                 //Hent 2 bytes
-    C[start] = HWire.read() << 8 | HWire.read();
+    C[i] = HWire.read() << 8 | HWire.read();
   }
 
   OFF_C2 = C[2] * pow(2, 16);
   SENS_C1 = C[1] * pow(2, 15);
 
-  for (start = 0; start < 100; start++) {                      //Gi sensoren tid til å stabiliserer seg
-    read_barometer();
+  for (i = 0; i < 100; i++) {                      //Gi sensoren tid til å stabiliserer seg
+    readBarometer();
     delay(4);
   }
   actual_pressure = 0;
 
+
+  //GPS
+  setupPrimaryGPS();                                                  //Sett opp GPS, baud rate osv...
 
 
   //Sjekker at batteriet + fjernkontrollen fungerer
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   while (channel_1 < 990 || channel_2 < 990 || channel_3 < 990 || channel_4 < 990)  {
-    error = 4;
+    error = 5;
     error_signal();
     delay(4);
   }
-
   error = 0;                                                       //Hvis den får signal fra fjernkontrollen sett feilen lik 0
-
 
   red_led(LOW);                                                    //Når alt ferdig, skru av rød LED
 
@@ -360,19 +413,13 @@ void setup() {
   //spenningen som måles og den egentlige er i forholdet: 1:11.
   //analogRead => 0 = 0V ..... 4095 = 36.3V
   //4095 / 36.3= 112.81.
-
   battery_voltage = (float)analogRead(4) / 112.81;
-
 
 
   for (i = 0; i <= 24; i++) {
     acc_z_average[i] = acc_z;
   }
   acc_z_average_total = acc_z * 25;                              //Den gjennomsnitlige verdien til akselerometeret blir lagret.
-
-
-
-  start = 0;
 
   loop_timer = micros();                                         //Start timeren for loopen
 
@@ -385,8 +432,9 @@ void setup() {
 
 void loop() {
 
-//Flymoduser
-//////////////////////////////////////////////////////////////
+
+  //Flymoduser
+  //////////////////////////////////////////////////////////////
 
   if (start == 0) {
 
@@ -422,8 +470,6 @@ void loop() {
   }
 
   
-
-  
   return_to_home();                                                                //fly hjem
   flight_mode_signal();                                                            //Vis flymodus
   error_signal();                                                                  //Vis feil
@@ -432,25 +478,20 @@ void loop() {
   //Leser alle de ulike sensorene
   //////////////////////////////////////////////////
 
-  gyro_signal();                                                                   //Les data fra gyroen
-
-  read_barometer();                                                                //Les data fra barometeret
-
-  read_compass();                                                                  //Les data fra kompasset
+  readIMU();                                                                       //Les data fra gyroen
+  readBarometer();                                                                //Les data fra barometeret
+  readLidar();
+  readCompass();                                                                  //Les data fra kompasset
 
   if (gps_add_counter >= 0) {
     gps_add_counter --;
   }
   read_gps();
 
-
-  //Gyro utregninger
-  //////////////////////////////////////////////////
-
   //utregningene som skal brukes i PID regulatoren
 
   gyro_roll_input = (gyro_roll_input * 0.7) + (((float)gyro_roll / 65.5) * 0.3);        //Deler på 65.5 for å få i deg/sek
-  gyro_pitch_input = (gyro_pitch_input * 0.7) + (((float)gyro_pitch / 65.5) * 0.3);     //Bruker et komplementær filter for å minske støy
+  gyro_pitch_input = (gyro_pitch_input * 0.7) + (((float)gyro_pitch / 65.5) * 0.3);     //Bruker et lavpassfilter for å minske støy
   gyro_yaw_input = (gyro_yaw_input * 0.7) + (((float)gyro_yaw / 65.5) * 0.3);
 
 
@@ -515,18 +556,37 @@ void loop() {
 
   vertical_acceleration_calculations();                                            //regner ut vertikal akselerasjon
 
-  //Sensor fusjon
+  //Sensorfusjon
   ////////////////////////////////////////////////////////
 
-  angle_pitch = (angle_pitch * 0.9996) + (angle_pitch_acc * 0.0004);
-  angle_roll = (angle_roll * 0.9996) + (angle_roll_acc * 0.0004);                  //Bruker et komplementær-filter for å kompensere for drift i gyroen
-
+  angle_pitch = (angle_pitch * 0.996) + (angle_pitch_acc * 0.004);
+  angle_roll = (angle_roll * 0.996) + (angle_roll_acc * 0.004);                  //Bruker et komplementær-filter for å kompensere for drift i gyroen
 
   pitch_level_adjust = angle_pitch * 15;                                           //Bruker en enkel P kontroller for å gi et pådrag lik en konstant ganger vinkelen
   roll_level_adjust = angle_roll * 15;
 
 
+  /*
+  Serial.print("\n angle_pitch : ");
+  Serial.print(angle_pitch);
+  Serial.print(" ");
+  Serial.print(cos(angle_pitch*PI/180));
+  Serial.print("\n angle_roll : ");
+  Serial.print(angle_roll);
+  Serial.print(" ");
+  Serial.print(cos(angle_roll*PI/180));
+  Serial.print("\n heightLidar in mm : ");
+  Serial.print(heightLidar);
+  Serial.print(" ");
+  Serial.print(heightLidar * cos(angle_pitch*PI/180) * cos(angle_roll*PI/180));
+  */
+  
 
+/*
+  Serial.print("\n l_lat_gps pid: ");
+  Serial.print(l_lat_gps);
+  Serial.print("\n l_lon_gps: pid ");
+  Serial.print(l_lon_gps);     */                                                          //Den nåværende latitude blir lagret
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -563,12 +623,18 @@ void loop() {
   if (pid_pitch_setpoint_base > 2000)pid_pitch_setpoint_base = 2000;
   if (pid_pitch_setpoint_base < 1000)pid_pitch_setpoint_base = 1000;
 
+  /*
+  Serial.print("\n actual pressure : ");
+  Serial.print(actual_pressure);
+  */
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  calculate_pid();                                                                 
+  calculate_pid();    
 
-  start_stop_takeoff();                                                            //Start, stopp og take-off detection
+  pidLidar();                        
+
+  Takeoff();                                                            //Start, stopp og take-off detection
 
   //Må kompensere for fall i spenningen
   //Et komplementærfilter brukes til å redusere støy
@@ -579,27 +645,29 @@ void loop() {
   if (battery_voltage > 6.0 && battery_voltage < low_battery_warning && error == 0) {
     error = 1;
   }
-
-
   //Regner ut basis for throttle som er "kraften" til hver motor
   //Er også her vi starter altitude hold
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////7
-
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+  Serial.print("throttle : ");
+  Serial.print(1500 + pidLidarTotal);
+*/
   if (takeoff == 1 && start == 2) {                                         //If the quadcopter is started and flying.
     throttle = channel_3;                                         //The base throttle is the receiver throttle channel + the detected take-off throttle.
-    if (channel_3 < 1550 && channel_3 > 1700) {
-      throttle = 1610;
+    if (channel_3 < 1450 && channel_3 > 1550) {
+      throttle = 1500;
     }
+    
     if (flight_mode >= 2) {                                                          //If altitude mode is active.
-      throttle = 1610 + pid_output_altitude + manual_throttle;    //The base throttle is the receiver throttle channel + the detected take-off throttle + the PID controller output.
+      //throttle = 1500 + pidLidarTotal;
+      throttle = 1560 + pid_output_altitude + manual_throttle;    //The base throttle is the receiver throttle channel + the detected take-off throttle + the PID controller output.
+      //Serial.print(takeoff_throttle);
     }
   }
-/*
-  Serial.print(takeoff_throttle);
-  Serial.print("\n");
-*/
+
   //Her blir alt(PID + throttle + timere) slått sammen for å porodusere signalene til esc-ene
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
   if (start == 2) {                                                                //starter motorene
     if (throttle > 1800) {
@@ -641,8 +709,6 @@ void loop() {
   TIMER4_BASE->CCR3 = esc_3;
   TIMER4_BASE->CCR4 = esc_4;
   TIMER4_BASE->CNT = 5000;                                                         //Verdien blir nullstilt av software ikke ARR
-
-  //send_telemetry_data();                                                         //Send telemetri til "bakkestasjonen"
 
 
   if (micros() - loop_timer > 4050) {

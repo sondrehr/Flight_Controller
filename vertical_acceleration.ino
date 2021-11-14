@@ -13,5 +13,8 @@ void vertical_acceleration_calculations() {
   acc_z_average_total += acc_z_average[acc_z_average_mem_location];
 
   acc_z_average_mem_location++;
-  
+ 
 }
+
+
+//Todo: Byttes ut med rangefinder

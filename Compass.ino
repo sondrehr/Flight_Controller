@@ -1,7 +1,7 @@
 
 //Oppløsning:
 
-void read_compass() {
+void readCompass() {
   HWire.beginTransmission(0x1E);                     
   HWire.write(0x03);                                            
   HWire.endTransmission();                                      
@@ -44,7 +44,7 @@ void read_compass() {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void setup_compass() {
+void setupCompass() {
   HWire.beginTransmission(0x1E);                   
   HWire.write(0x00);                                           
   HWire.write(0x78);                                            

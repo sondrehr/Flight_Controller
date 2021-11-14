@@ -11,7 +11,7 @@ void calibrate_compass() {
     //send_telemetry_data();                                                 
     
     delayMicroseconds(3700);                                                 
-    read_compass();                                                          
+    readCompass();                                                          
 
     if (compass_x < compass_cal_values[0])compass_cal_values[0] = compass_x;                            //Les maks og min på hver akse for å skalere alle riktig
     if (compass_x > compass_cal_values[1])compass_cal_values[1] = compass_x;
@@ -44,8 +44,8 @@ void calibrate_compass() {
     EEPROM.write(0x10 + j, compass_cal_values[j]);
   }
 
-  setup_compass();                                                           //Initialiser kompasset og set verdier
-  read_compass();                                                            //Les data fra kompasset
+  setupCompass();                                                           //Initialiser kompasset og set verdier
+  readCompass();                                                            //Les data fra kompasset
   
   angle_yaw = actual_compass_heading;                                        //Sett den initielle retningen
 
@@ -77,7 +77,7 @@ void calibrate_level() {
   
   for (i = 0; i < 64; i ++) {
     send_telemetry_data();                                                  //Send data til Tx
-    gyro_signal();
+    readIMU();
     acc_pitch_cal_value += acc_x;
     acc_roll_cal_value += acc_y;
     
@@ -112,7 +112,7 @@ void calibrate_level() {
   }
 
   level_calibration_on = 0;                                                        //signaliserer at kalibreringen har stoppet
-  gyro_signal();                                                                   //Tar en siste lesning 
+  readIMU();                                                                   //Tar en siste lesning 
 
   loop_timer = micros();                                                           //Set the timer for the next loop.
 }

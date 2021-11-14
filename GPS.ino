@@ -3,7 +3,7 @@
 
 
 
-void gps_setup(){
+void setupPrimaryGPS(){
 
   Serial1.begin(9600);
   delay(250);

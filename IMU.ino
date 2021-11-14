@@ -1,38 +1,31 @@
 
-//Oppløsning:
-
-//Gyro: 500 deg/sec
-
-//Acc: 4 g
-
 
 //initialiserer registrene
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void gyro_setup() {
-  HWire.beginTransmission(0x68);                        
+void setupIMU(int16_t address) {
+  HWire.beginTransmission(address);                        
   HWire.write(0x6B);                                            //PWR_MGMT_1 for å nullstille gyro
   HWire.write(0x00);                                            //00000000
   HWire.endTransmission();                                
 
-  HWire.beginTransmission(0x68);                     
+  HWire.beginTransmission(address);                     
   HWire.write(0x1B);                                            //GYRO_CONFIG for å sette måleområdet
   HWire.write(0x08);                                            //00001000 (500 grader/s).
   HWire.endTransmission();                                  
 
-  HWire.beginTransmission(0x68);                       
+  HWire.beginTransmission(address);                       
   HWire.write(0x1C);                                            //ACCEL_CONFIG for å sette måleområdet.
   HWire.write(0x16);                                            //00010000 (+/- 8g)
   HWire.endTransmission();                                  
 
-  HWire.beginTransmission(0x68);                       
+  HWire.beginTransmission(address);                       
   HWire.write(0x1A);                                            //CONFIG for å bruke et digitalt lavpassfilter
   HWire.write(0x03);                                            //00000011 (Set Digital Low Pass Filter to ~43Hz).
   HWire.endTransmission();                                  
 
   acc_pitch_cal_value  = EEPROM.read(0x16);
   acc_roll_cal_value  = EEPROM.read(0x17);
-
 }
 
 //Kalibreringen av gyroen
@@ -48,7 +41,7 @@ void calibrate_gyro() {
     if (cal_int % 50 == 0){
       digitalWrite(PA12, !digitalRead(PA12));                                       //slår LED av og på under calibreringen
     }
-    gyro_signal();                                                          
+    readIMU();                                                          
     gyro_roll_cal += gyro_roll;                                                  
     gyro_pitch_cal += gyro_pitch;                                                  
     gyro_yaw_cal += gyro_yaw;                                                     
@@ -64,11 +57,12 @@ void calibrate_gyro() {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void gyro_signal() {
-  HWire.beginTransmission(0x68);                      
+void readIMU() {
+  //HWire.beginTransmission(0x69);
+  HWire.beginTransmission(0x69);                      
   HWire.write(0x3B);                                           
   HWire.endTransmission();                                    
-  HWire.requestFrom(0x68, 14);                                 //Be om 14 bytes
+  HWire.requestFrom(0x69, 14);                                 //Be om 14 bytes
   acc_x = HWire.read() << 8 | HWire.read();               
   acc_y = HWire.read() << 8 | HWire.read();                 
   acc_z = HWire.read() << 8 | HWire.read();                 
@@ -89,6 +83,6 @@ void gyro_signal() {
   if (cal_int == 2000) {
     gyro_roll -= gyro_roll_cal;                                //trekker fra drift i gyroen
     gyro_pitch -= gyro_pitch_cal;                         
-    gyro_yaw -= gyro_yaw_cal;                            
+    gyro_yaw -= gyro_yaw_cal;
   }
 }

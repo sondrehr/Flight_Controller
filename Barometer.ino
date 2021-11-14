@@ -1,7 +1,7 @@
 
 
 
-void read_barometer() {
+void readBarometer() {
   barometer_counter ++;
 
   //det er 3 looper her hvor en total loop tar 12 ms
@@ -93,12 +93,12 @@ void read_barometer() {
     }
     actual_pressure = actual_pressure_slow;                                                                   //Trykket som blir brukt i loopen
 
-/*
+    /*
     Serial.print("\n");
     Serial.print(actual_pressure);
     Serial.print("\t");
     Serial.print(actual_pressure/100);
-  */
+    */
   }
 
 /////////////////////////////////////////////////////////////

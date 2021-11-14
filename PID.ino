@@ -65,11 +65,8 @@ void calculate_pid() {
   }
 
   pid_output_roll = ((pid_p_gain_roll * pid_error_temp) + pid_i_mem_roll_rate + (pid_d_gain_roll * (pid_error_temp - pid_roll_d_error_rate)));
-/*
-  Serial.print(pid_i_mem_roll_rate);
-  Serial.print("\t");
-*/
-  
+
+
   if (pid_output_roll > pid_max_roll){                                                 //begrensning i pådrag                
     pid_output_roll = pid_max_roll;                                       
   }
@@ -136,15 +133,6 @@ void calculate_pid() {
   }
 
   pid_yaw_d_error = pid_error_temp;
-
-  /*
-  Serial.print(angle_yaw);
-  Serial.print("\t");
-  Serial.print(actual_compass_heading);
-  Serial.print("\n");
-*/
-
-
 }
 
 
