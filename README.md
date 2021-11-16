@@ -33,4 +33,5 @@ Added more light to display different states in v2.0
 This is going to be a PCB instead a diy soldered board
 
 #Schematic made in KiCad
+
 <img src="https://github.com/sondrehr/Flight_Controller/blob/master/PCB%20kiCAD/flight%20controller%20schematic.png" alt="pcb" width="700"/>
