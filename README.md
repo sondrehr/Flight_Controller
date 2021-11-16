@@ -27,3 +27,10 @@ Focused on more solid soldering. In addition to cleaning up in v2.0
 Added more light to display different states in v2.0
 
 <img src="https://github.com/sondrehr/Flight_Controller/blob/master/Drone%20Pictures/IMG_20210723_120402.jpg" alt="Drone version 2" width="700"/>
+
+### Circuit board v3.0
+
+This is going to be a PCB instead a diy soldered board
+
+#Schematic made in KiCad
+<img src="https://github.com/sondrehr/Flight_Controller/blob/master/PCB%20kiCAD/flight%20controller.pdf" alt="pcb" width="700"/>
