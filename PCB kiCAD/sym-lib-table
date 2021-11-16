@@ -1,0 +1,7 @@
+(sym_lib_table
+  (lib (name stm32)(type Legacy)(uri ${KIPRJMOD}/stm32.lib)(options "")(descr ""))
+  (lib (name "mpu 6050")(type Legacy)(uri "${KIPRJMOD}/mpu 6050.lib")(options "")(descr ""))
+  (lib (name ftdi)(type Legacy)(uri ${KIPRJMOD}/ftdi.lib)(options "")(descr ""))
+  (lib (name Barometer)(type Legacy)(uri ${KIPRJMOD}/Barometer.lib)(options "")(descr ""))
+  (lib (name gps)(type Legacy)(uri ${KIPRJMOD}/gps.lib)(options "")(descr ""))
+)

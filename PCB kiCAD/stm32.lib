@@ -1,0 +1,18 @@
+EESchema-LIBRARY Version 2.4
+#encoding utf-8
+#
+# bluepilll
+#
+DEF bluepilll U 0 40 Y Y 1 F N
+F0 "U" -100 50 50 H V C CNN
+F1 "bluepilll" -100 50 50 H V C CNN
+F2 "" -100 50 50 H I C CNN
+F3 "" -100 50 50 H I C CNN
+DRAW
+S 400 -1300 -450 400 0 1 0 f
+X PA10 1 -550 -100 100 R 50 50 1 1 B
+X GND 13 500 300 100 L 50 50 1 1 B
+ENDDRAW
+ENDDEF
+#
+#End Library
