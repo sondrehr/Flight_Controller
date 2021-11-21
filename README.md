@@ -35,3 +35,16 @@ This is going to be a PCB instead a diy soldered board
 #### Schematic made in KiCad
 
 <img src="https://github.com/sondrehr/Flight_Controller/blob/master/PCB%20kiCAD/flight%20controller%20schematic.png" alt="pcb" width="700"/>
+
+#### Trace model made in KiCad
+
+Made on a 4 layer PCB where layer 2 and 3(not included in the img) are VCC and GND. 
+
+<img src="https://github.com/sondrehr/Flight_Controller/blob/master/PCB%20kiCAD/FC_pcb.PNG" alt="pcb" width="700"/>
+
+#### 3D model of PCB
+
+<img src="https://github.com/sondrehr/Flight_Controller/blob/master/PCB%20kiCAD/FC_3D.png" alt="pcb" width="700"/>
+
+
+
