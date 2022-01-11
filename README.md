@@ -46,7 +46,7 @@ Made on a 4 layer PCB where layer 2 and 3(not included in the img) are VCC and G
 
 <img src="https://github.com/sondrehr/Flight_Controller/blob/master/PCB%20kiCAD/FC_3D.png" alt="pcb" width="700"/>
 
-####Picture of PCB v3.0 with soldered components
+#### Picture of PCB v3.0 with soldered components
 
 <img src="https://github.com/sondrehr/Flight_Controller/blob/master/Drone%20Pictures/Capture.JPG" alt="pcb" width="700"/>
 
