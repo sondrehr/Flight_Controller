@@ -95,14 +95,14 @@ NoConn ~ 10000 2750
 NoConn ~ 3850 4350
 Text Label 4650 1600 0    50   ~ 0
 ESC1
-Text Label 7700 2000 2    50   ~ 0
+Text Label 7700 1800 2    50   ~ 0
 SDA
 Wire Wire Line
-	7700 2000 7900 2000
-Text Label 7700 1800 2    50   ~ 0
+	7700 1800 7900 1800
+Text Label 7700 2000 2    50   ~ 0
 SCL
 Wire Wire Line
-	7700 1800 7900 1800
+	7700 2000 7900 2000
 $Comp
 L gps:gps U4
 U 1 1 61A647EA
@@ -115,9 +115,9 @@ F 3 "" H 8300 1900 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	8800 1800 8600 1800
-Wire Wire Line
 	8800 2000 8600 2000
+Wire Wire Line
+	8800 1800 8600 1800
 Wire Notes Line
 	7000 3400 5500 3400
 Text Notes 6250 3750 2    40   ~ 0
@@ -184,12 +184,12 @@ Wire Wire Line
 $Comp
 L power:Earth #PWR0113
 U 1 1 61AE4ACD
-P 8600 3400
-F 0 "#PWR0113" H 8600 3150 50  0001 C CNN
-F 1 "Earth" H 8600 3250 50  0001 C CNN
-F 2 "" H 8600 3400 50  0001 C CNN
-F 3 "~" H 8600 3400 50  0001 C CNN
-	1    8600 3400
+P 8750 2800
+F 0 "#PWR0113" H 8750 2550 50  0001 C CNN
+F 1 "Earth" H 8750 2650 50  0001 C CNN
+F 2 "" H 8750 2800 50  0001 C CNN
+F 3 "~" H 8750 2800 50  0001 C CNN
+	1    8750 2800
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -329,34 +329,34 @@ Wire Wire Line
 Text Label 4750 1800 0    50   ~ 0
 5V
 Wire Wire Line
-	8800 3200 8600 3200
-Wire Wire Line
 	8800 3000 8600 3000
-Text Label 8800 3000 0    50   ~ 0
-RX
+Wire Wire Line
+	8800 3200 8600 3200
 Text Label 8800 3200 0    50   ~ 0
+RX
+Text Label 8800 3000 0    50   ~ 0
 TX
 Wire Wire Line
-	8800 2800 8600 2800
-Text Label 8800 2800 0    50   ~ 0
+	8800 3400 8600 3400
+Text Label 8800 3400 0    50   ~ 0
 5V
 Wire Wire Line
-	8800 1600 8600 1600
-Text Label 8800 1600 0    50   ~ 0
+	8800 2200 8600 2200
+Text Label 8800 2200 0    50   ~ 0
 5V
-Text Label 8800 1800 0    50   ~ 0
-RX2
 Text Label 8800 2000 0    50   ~ 0
+RX2
+Text Label 8800 1800 0    50   ~ 0
 TX2
 $Comp
 L power:Earth #PWR0106
 U 1 1 61A90FD5
-P 8600 2200
-F 0 "#PWR0106" H 8600 1950 50  0001 C CNN
-F 1 "Earth" H 8600 2050 50  0001 C CNN
-F 2 "" H 8600 2200 50  0001 C CNN
-F 3 "~" H 8600 2200 50  0001 C CNN
-	1    8600 2200
+P 8800 1600
+F 0 "#PWR0106" H 8800 1350 50  0001 C CNN
+F 1 "Earth" H 8800 1450 50  0001 C CNN
+F 2 "" H 8800 1600 50  0001 C CNN
+F 3 "~" H 8800 1600 50  0001 C CNN
+	1    8800 1600
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -906,4 +906,8 @@ F 3 "~" H 8800 4600 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	8650 4600 8800 4600
+Wire Wire Line
+	8800 1600 8600 1600
+Wire Wire Line
+	8750 2800 8600 2800
 $EndSCHEMATC

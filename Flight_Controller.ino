@@ -330,7 +330,7 @@ void setup() {
     error_signal();
     delay(4);
   }
-/*
+
   //Teraranger 60m
   HWire.beginTransmission(0x31);
   error = HWire.endTransmission();
@@ -339,7 +339,7 @@ void setup() {
     error_signal();
     delay(4);
   }
-*/
+
 
   //Setup the different sensors
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

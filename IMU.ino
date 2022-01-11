@@ -69,10 +69,16 @@ void readIMU() {
   temperature = HWire.read() << 8 | HWire.read();        
   gyro_roll = HWire.read() << 8 | HWire.read();             
   gyro_pitch = HWire.read() << 8 | HWire.read();           
-  gyro_yaw = HWire.read() << 8 | HWire.read();    
+  gyro_yaw = HWire.read() << 8 | HWire.read();
+  /*    
   acc_x *= -1;  
   gyro_yaw *= -1;                                              //Snu om på yaw aksen
-
+  */
+  acc_y *= -1;
+  gyro_yaw *= -1;
+  gyro_pitch *= -1;
+  gyro_roll *= -1;
+  
 
   if (level_calibration_on == 0) {                             //Trekk fra den feilen kalkulert i kalibreringen av gyroen
     acc_x -= (acc_pitch_cal_value);                              

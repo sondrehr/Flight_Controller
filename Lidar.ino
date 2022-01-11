@@ -17,17 +17,16 @@ uint8_t crc8(uint8_t *p, uint8_t len) {
 }
 
 void setupLidar(){
-  HWire.beginTransmission(SENSOR_ADDR);
-  Wire.write(long_mode, 2); // Sensor is in long mode when powered up
+  HWire.beginTransmission(0x31);
   HWire.endTransmission();
   delay(25);
 }
 
 void readLidar(){
-  HWire.beginTransmission(SENSOR_ADDR);  // Transmit to Evo Mini (THIS IS THE I2C BASE ADDRESS, CHANGE HERE IN CASE IT IS DIFFERENT)
+  HWire.beginTransmission(0x31);  // Transmit to Evo Mini (THIS IS THE I2C BASE ADDRESS, CHANGE HERE IN CASE IT IS DIFFERENT)
   HWire.write(0x00);                     // Sends measure trigger byte
   HWire.endTransmission();               // Stop transmitting
-  HWire.requestFrom(SENSOR_ADDR, 3);     // Read back three bytes from Evo Mini (THIS IS THE I2C BASE ADDRESS, CHANGE HERE IN CASE IT IS DIFFERENT)
+  HWire.requestFrom(0x31, 3);     // Read back three bytes from Evo Mini (THIS IS THE I2C BASE ADDRESS, CHANGE HERE IN CASE IT IS DIFFERENT)
 
   buf[0] = HWire.read();                 // First byte of heightLidar
   buf[1] = HWire.read();                 // Second byte of heightLidar
